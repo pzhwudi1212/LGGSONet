@@ -1,0 +1,285 @@
+2024-09-12 11:55:02,647 INFO: 
+                ____                _       _____  ____
+               / __ ) ____ _ _____ (_)_____/ ___/ / __ \
+              / __  |/ __ `// ___// // ___/\__ \ / /_/ /
+             / /_/ // /_/ /(__  )/ // /__ ___/ // _, _/
+            /_____/ \__,_//____//_/ \___//____//_/ |_|
+     ______                   __   __                 __      __
+    / ____/____   ____   ____/ /  / /   __  __ _____ / /__   / /
+   / / __ / __ \ / __ \ / __  /  / /   / / / // ___// //_/  / /
+  / /_/ // /_/ // /_/ // /_/ /  / /___/ /_/ // /__ / /<    /_/
+  \____/ \____/ \____/ \____/  /_____/\____/ \___//_/|_|  (_)
+    
+Version Information: 
+	BasicSR: 1.4.2
+	PyTorch: 2.3.1
+	TorchVision: 0.18.1
+2024-09-12 11:55:02,647 INFO: 
+  name: PSAFM_PSPA_16_LSR_x4
+  model_type: IRModel
+  num_gpu: 1
+  manual_seed: 0
+  bit: 0
+  network_g:[
+    type: DLGSANet
+    upscale: 4
+    in_chans: 3
+    dim: 48
+    groups: 4
+    blocks: 3
+    buildblock_type: sparseedge
+    window_size: 7
+    idynamic_num_heads: 6
+    idynamic_ffn_type: GDFN
+    idynamic_ffn_expansion_factor: 2.0
+    idynamic: True
+    restormer_num_heads: 6
+    restormer_ffn_type: GDFN
+    restormer_ffn_expansion_factor: 2.0
+    tlc_flag: True
+    tlc_kernel: 48
+    activation: relu
+    body_norm: False
+    img_range: 1.0
+    upsampler: pixelshuffledirect
+    num_in_ch: 3
+    num_out_ch: 3
+    task: lsr
+  ]
+  path:[
+    pretrain_network_g: modelzoo/PZH/Selection_NoOptimization.pth
+    strict_load_g: True
+    resume_state: None
+    results_root: D:\Graduate\Code\PyCharm\FriedRiceLab\results\PSAFM_PSPA_16_LSR_x4
+    log: D:\Graduate\Code\PyCharm\FriedRiceLab\results\PSAFM_PSPA_16_LSR_x4
+    visualization: D:\Graduate\Code\PyCharm\FriedRiceLab\results\PSAFM_PSPA_16_LSR_x4\visualization
+  ]
+  train:[
+    gt_size: 192
+    batch_size_per_gpu: 16
+    total_iter: 1000000
+    optim_g:[
+      type: Adam
+      lr: 0.0005
+      weight_decay: 0
+      betas: [0.9, 0.999]
+    ]
+    scheduler:[
+      type: MultiStepLR
+      milestones: [250000, 400000, 450000, 475000]
+      gamma: 0.5
+    ]
+    pixel_opt:[
+      type: L1Loss
+      loss_weight: 1.0
+      reduction: mean
+    ]
+  ]
+  val:[
+    val_freq: 10000.0
+    save_img: True
+    suffix: None
+    self_ensemble: True
+    metrics:[
+      psnr:[
+        type: calculate_psnr
+        crop_border: 4
+        test_y_channel: True
+      ]
+      ssim:[
+        type: calculate_ssim
+        crop_border: 4
+        test_y_channel: True
+      ]
+    ]
+  ]
+  task_name: LSR_x4
+  scale: 4
+  num_in_ch: 3
+  num_out_ch: 3
+  task: lsr
+  hook_layer_type: SABase4D
+  datasets:[
+    train:[
+      name: DIV2K_train
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/DF2K/train/HR/x.lmdb
+      dataroot_lq: datasets/sr_data/DF2K/train/LR/x4.lmdb
+      meta_info_file: datasets/meta_info/DIV2K_train.txt
+      io_backend:[
+        type: lmdb
+      ]
+      extra_datasets:[
+        extra_0:[
+          name: Flickr2K_train
+          dataroot_gt: datasets/sr_data/DF2K/train/HR/x.lmdb
+          dataroot_lq: datasets/sr_data/DF2K/train/LR/x4.lmdb
+          meta_info_file: datasets/meta_info/Flickr2K_train.txt
+          io_backend:[
+            type: lmdb
+          ]
+        ]
+      ]
+      use_hflip: True
+      use_rot: True
+      use_shuffle: True
+      num_worker_per_gpu: 4
+      dataset_enlarge_ratio: 100
+      prefetch_mode: None
+      phase: train
+      scale: 4
+    ]
+    val_0:[
+      name: DF2K_val_10
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/DF2K/val/HR/x.lmdb
+      dataroot_lq: datasets/sr_data/DF2K/val/LR/x4.lmdb
+      meta_info_file: datasets/meta_info/DF2K_val_10.txt
+      io_backend:[
+        type: lmdb
+      ]
+      phase: val
+      scale: 4
+    ]
+  ]
+  test_datasets:[
+    test_0:[
+      name: Demo_Set5
+      type: IRDataset
+      dataroot_gt: datasets/demo_data/Demo_Set5/HR/x4
+      dataroot_lq: datasets/demo_data/Demo_Set5/LR/x4
+      io_backend:[
+        type: disk
+      ]
+    ]
+    test_1:[
+      name: Set5
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/Set5/HR/x4.lmdb
+      dataroot_lq: datasets/sr_data/Set5/LR/x4.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+    test_2:[
+      name: Set14
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/Set14/HR/x4.lmdb
+      dataroot_lq: datasets/sr_data/Set14/LR/x4.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+    test_3:[
+      name: BSD100
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/BSD100/HR/x4.lmdb
+      dataroot_lq: datasets/sr_data/BSD100/LR/x4.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+    test_4:[
+      name: Urban100
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/Urban100/HR/x4.lmdb
+      dataroot_lq: datasets/sr_data/Urban100/LR/x4.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+    test_5:[
+      name: Manga109
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/Manga109/HR/x4.lmdb
+      dataroot_lq: datasets/sr_data/Manga109/LR/x4.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+  ]
+  analyse_datasets:[
+    analyse_0:[
+      name: Demo_Set5
+      type: IRDataset
+      dataroot_gt: datasets/demo_data/Demo_Set5/HR/x4
+      dataroot_lq: datasets/demo_data/Demo_Set5/LR/x4
+      io_backend:[
+        type: disk
+      ]
+    ]
+  ]
+  infer_datasets:[
+    infer_0:[
+      name: Set5_GT
+      type: IRDataset
+      dataroot_gt: datasets/demo_data/Demo_Set5/HR/x4
+      io_backend:[
+        type: disk
+      ]
+    ]
+  ]
+  cka_datasets:[
+    cka_0:[
+      name: DF2K_val
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/DF2K/val/HR/x.lmdb
+      dataroot_lq: datasets/sr_data/DF2K/val/LR/x4.lmdb
+      meta_info_file: datasets/meta_info/DF2K_val.txt
+      io_backend:[
+        type: lmdb
+      ]
+      input_size: 288
+    ]
+  ]
+  mad_datasets:[
+    mad_0:[
+      name: DF2K_val
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/DF2K/val/HR/x.lmdb
+      dataroot_lq: datasets/sr_data/DF2K/val/LR/x4.lmdb
+      meta_info_file: datasets/meta_info/DF2K_val.txt
+      io_backend:[
+        type: lmdb
+      ]
+      input_size: 288
+    ]
+  ]
+  interpret_imgs:[
+    img_0:[
+      img_path: datasets/demo_data/Urban7/7.png
+      w: 110
+      h: 150
+    ]
+  ]
+  logger:[
+    print_freq: 2000
+    save_checkpoint_freq: 10000.0
+    use_tb_logger: False
+    wandb:[
+      project: None
+      resume_id: None
+    ]
+  ]
+  dist_params:[
+    backend: nccl
+    port: 4000
+  ]
+  dist: False
+  rank: 0
+  world_size: 1
+  auto_resume: False
+  is_train: False
+
+2024-09-12 11:55:02,647 INFO: Dataset [IRDataset] - Demo_Set5 is built.
+2024-09-12 11:55:02,647 INFO: Number of analyse images in Demo_Set5: 5
+2024-09-12 11:55:02,663 INFO: Network [DLGSANet] is created.
+2024-09-12 11:55:02,797 INFO: Loading DLGSANet model from modelzoo/PZH/Selection_NoOptimization.pth, with param key: [params].
+2024-09-12 11:55:02,825 INFO: Model [IRModel] is created.
+2024-09-12 11:55:02,825 INFO: Analyzing DLGSANet...
+2024-09-12 11:55:02,825 INFO: #Params [M]: 671544
+2024-09-12 11:55:03,173 INFO: #FLOPs [G]: 42.891731712
+2024-09-12 11:55:03,417 INFO: #Acts [M]: 1016.021568
+2024-09-12 11:55:03,417 INFO: #Conv: 223
+2024-09-12 11:55:03,778 INFO: #Demo_Set5 Ave. Time [ms]: 23.67034912109375
+2024-09-12 11:55:03,778 INFO: #Demo_Set5 GPU Mem. [M] in: 62.8681640625
