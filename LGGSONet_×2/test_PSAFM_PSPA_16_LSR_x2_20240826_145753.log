@@ -1,0 +1,964 @@
+2024-08-26 14:57:53,613 INFO: 
+                ____                _       _____  ____
+               / __ ) ____ _ _____ (_)_____/ ___/ / __ \
+              / __  |/ __ `// ___// // ___/\__ \ / /_/ /
+             / /_/ // /_/ /(__  )/ // /__ ___/ // _, _/
+            /_____/ \__,_//____//_/ \___//____//_/ |_|
+     ______                   __   __                 __      __
+    / ____/____   ____   ____/ /  / /   __  __ _____ / /__   / /
+   / / __ / __ \ / __ \ / __  /  / /   / / / // ___// //_/  / /
+  / /_/ // /_/ // /_/ // /_/ /  / /___/ /_/ // /__ / /<    /_/
+  \____/ \____/ \____/ \____/  /_____/\____/ \___//_/|_|  (_)
+    
+Version Information: 
+	BasicSR: 1.4.2
+	PyTorch: 2.3.1
+	TorchVision: 0.18.1
+2024-08-26 14:57:53,614 INFO: 
+  name: PSAFM_PSPA_16_LSR_x2
+  model_type: SRModel
+  num_gpu: 1
+  manual_seed: 0
+  bit: 0
+  network_g:[
+    type: DLGSANet
+    upscale: 2
+    in_chans: 3
+    dim: 48
+    groups: 4
+    blocks: 3
+    buildblock_type: sparseedge
+    window_size: 7
+    idynamic_num_heads: 6
+    idynamic_ffn_type: GDFN
+    idynamic_ffn_expansion_factor: 2.0
+    idynamic: True
+    restormer_num_heads: 6
+    restormer_ffn_type: GDFN
+    restormer_ffn_expansion_factor: 2.0
+    tlc_flag: True
+    tlc_kernel: 96
+    activation: relu
+    body_norm: False
+    img_range: 1.0
+    upsampler: pixelshuffledirect
+    num_in_ch: 3
+    num_out_ch: 3
+    task: lsr
+  ]
+  path:[
+    pretrain_network_g: experiments/PSAFM_PSPA_16_LSR_x2/models/net_g_latest.pth
+    strict_load_g: True
+    resume_state: None
+    results_root: D:\Graduate\Code\PyCharm\FriedRiceLab\results\PSAFM_PSPA_16_LSR_x2
+    log: D:\Graduate\Code\PyCharm\FriedRiceLab\results\PSAFM_PSPA_16_LSR_x2
+    visualization: D:\Graduate\Code\PyCharm\FriedRiceLab\results\PSAFM_PSPA_16_LSR_x2\visualization
+  ]
+  train:[
+    gt_size: 96
+    batch_size_per_gpu: 16
+    total_iter: 1000000
+    optim_g:[
+      type: Adam
+      lr: 0.0005
+      weight_decay: 0
+      betas: [0.9, 0.999]
+    ]
+    scheduler:[
+      type: MultiStepLR
+      milestones: [250000, 400000, 450000, 475000]
+      gamma: 0.5
+    ]
+    pixel_opt:[
+      type: L1Loss
+      loss_weight: 1.0
+      reduction: mean
+    ]
+  ]
+  val:[
+    val_freq: 10000.0
+    save_img: False
+    suffix: None
+    metrics:[
+      psnr:[
+        type: calculate_psnr
+        crop_border: 4
+        test_y_channel: True
+      ]
+      ssim:[
+        type: calculate_ssim
+        crop_border: 4
+        test_y_channel: True
+      ]
+    ]
+  ]
+  task_name: LSR_x2
+  scale: 2
+  num_in_ch: 3
+  num_out_ch: 3
+  task: lsr
+  hook_layer_type: Conv2d
+  datasets:[
+    train:[
+      name: DIV2K_train
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/DF2K/train/HR/x.lmdb
+      dataroot_lq: datasets/sr_data/DF2K/train/LR/x2.lmdb
+      meta_info_file: datasets/meta_info/DIV2K_train.txt
+      io_backend:[
+        type: lmdb
+      ]
+      extra_datasets:[
+        extra_0:[
+          name: Flickr2K_train
+          dataroot_gt: datasets/sr_data/DF2K/train/HR/x.lmdb
+          dataroot_lq: datasets/sr_data/DF2K/train/LR/x2.lmdb
+          meta_info_file: datasets/meta_info/Flickr2K_train.txt
+          io_backend:[
+            type: lmdb
+          ]
+        ]
+      ]
+      use_hflip: True
+      use_rot: True
+      use_shuffle: True
+      num_worker_per_gpu: 4
+      dataset_enlarge_ratio: 100
+      prefetch_mode: None
+      phase: train
+      scale: 2
+    ]
+    val_0:[
+      name: DF2K_val_10
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/DF2K/val/HR/x.lmdb
+      dataroot_lq: datasets/sr_data/DF2K/val/LR/x2.lmdb
+      meta_info_file: datasets/meta_info/DF2K_val_10.txt
+      io_backend:[
+        type: lmdb
+      ]
+      phase: val
+      scale: 2
+    ]
+  ]
+  test_datasets:[
+    test_1:[
+      name: Set5
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/Set5/HR/x2.lmdb
+      dataroot_lq: datasets/sr_data/Set5/LR/x2.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+    test_2:[
+      name: Set14
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/Set14/HR/x2.lmdb
+      dataroot_lq: datasets/sr_data/Set14/LR/x2.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+    test_3:[
+      name: BSD100
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/BSD100/HR/x2.lmdb
+      dataroot_lq: datasets/sr_data/BSD100/LR/x2.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+    test_4:[
+      name: Urban100
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/Urban100/HR/x2.lmdb
+      dataroot_lq: datasets/sr_data/Urban100/LR/x2.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+    test_5:[
+      name: Manga109
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/Manga109/HR/x2.lmdb
+      dataroot_lq: datasets/sr_data/Manga109/LR/x2.lmdb
+      io_backend:[
+        type: lmdb
+      ]
+    ]
+  ]
+  analyse_datasets:[
+    analyse_0:[
+      name: Demo_Set5
+      type: IRDataset
+      dataroot_gt: datasets/demo_data/Demo_Set5/HR/x2
+      dataroot_lq: datasets/demo_data/Demo_Set5/LR/x2
+      io_backend:[
+        type: disk
+      ]
+    ]
+  ]
+  infer_datasets:[
+    infer_0:[
+      name: Set5_GT
+      type: IRDataset
+      dataroot_gt: datasets/demo_data/Demo_Set5/HR/x2
+      io_backend:[
+        type: disk
+      ]
+    ]
+  ]
+  cka_datasets:[
+    cka_0:[
+      name: DF2K_val
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/DF2K/val/HR/x.lmdb
+      dataroot_lq: datasets/sr_data/DF2K/val/LR/x2.lmdb
+      meta_info_file: datasets/meta_info/DF2K_val.txt
+      io_backend:[
+        type: lmdb
+      ]
+      input_size: 288
+    ]
+  ]
+  mad_datasets:[
+    mad_0:[
+      name: DF2K_val
+      type: IRDataset
+      dataroot_gt: datasets/sr_data/DF2K/val/HR/x.lmdb
+      dataroot_lq: datasets/sr_data/DF2K/val/LR/x2.lmdb
+      meta_info_file: datasets/meta_info/DF2K_val.txt
+      io_backend:[
+        type: lmdb
+      ]
+      input_size: 288
+    ]
+  ]
+  interpret_imgs:[
+    img_0:[
+      img_path: datasets/demo_data/Urban7/7.png
+      w: 110
+      h: 150
+    ]
+  ]
+  logger:[
+    print_freq: 2000
+    save_checkpoint_freq: 10000.0
+    use_tb_logger: False
+    wandb:[
+      project: None
+      resume_id: None
+    ]
+  ]
+  dist_params:[
+    backend: nccl
+    port: 4000
+  ]
+  dist: False
+  rank: 0
+  world_size: 1
+  auto_resume: False
+  is_train: False
+
+2024-08-26 14:57:53,619 INFO: Dataset [IRDataset] - Set5 is built.
+2024-08-26 14:57:53,620 INFO: Number of test images in Set5: 5
+2024-08-26 14:57:53,624 INFO: Dataset [IRDataset] - Set14 is built.
+2024-08-26 14:57:53,624 INFO: Number of test images in Set14: 14
+2024-08-26 14:57:53,628 INFO: Dataset [IRDataset] - BSD100 is built.
+2024-08-26 14:57:53,628 INFO: Number of test images in BSD100: 100
+2024-08-26 14:57:53,632 INFO: Dataset [IRDataset] - Urban100 is built.
+2024-08-26 14:57:53,632 INFO: Number of test images in Urban100: 100
+2024-08-26 14:57:53,636 INFO: Dataset [IRDataset] - Manga109 is built.
+2024-08-26 14:57:53,636 INFO: Number of test images in Manga109: 109
+2024-08-26 14:57:53,657 INFO: Network [DLGSANet] is created.
+2024-08-26 14:57:53,789 INFO: Network: DLGSANet, with parameters: 757,908
+2024-08-26 14:57:53,789 INFO: DLGSANet(
+  (overlap_embed): Sequential(
+    (0): OverlapPatchEmbed(
+      (proj): Conv2d(3, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+    )
+  )
+  (deep_feature_extraction): Sequential(
+    (0): BuildBlock(
+      dim=48, blocks=3, buildblock_type=sparseedge, window_size=7, num_heads=(6, 6), ffn_type=('GDFN', 'GDFN'), ffn_expansion=(2.0, 2.0), idynamic=True, tlc=True
+      (body): Sequential(
+        (0): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (1): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (2): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (3): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (4): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (5): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (6): Conv2d(48, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+    )
+    (1): BuildBlock(
+      dim=48, blocks=3, buildblock_type=sparseedge, window_size=7, num_heads=(6, 6), ffn_type=('GDFN', 'GDFN'), ffn_expansion=(2.0, 2.0), idynamic=True, tlc=True
+      (body): Sequential(
+        (0): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (1): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (2): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (3): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (4): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (5): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (6): Conv2d(48, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+    )
+    (2): BuildBlock(
+      dim=48, blocks=3, buildblock_type=sparseedge, window_size=7, num_heads=(6, 6), ffn_type=('GDFN', 'GDFN'), ffn_expansion=(2.0, 2.0), idynamic=True, tlc=True
+      (body): Sequential(
+        (0): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (1): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (2): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (3): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (4): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (5): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (6): Conv2d(48, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+    )
+    (3): BuildBlock(
+      dim=48, blocks=3, buildblock_type=sparseedge, window_size=7, num_heads=(6, 6), ffn_type=('GDFN', 'GDFN'), ffn_expansion=(2.0, 2.0), idynamic=True, tlc=True
+      (body): Sequential(
+        (0): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (1): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (2): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (3): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (4): SAFMLayerBlock(
+          (safm): SAFM(
+            (mfr): ModuleList(
+              (0-3): 4 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=12)
+            )
+            (aggr): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1))
+            (act): GELU(approximate='none')
+            (gap): AdaptiveAvgPool2d(output_size=1)
+            (softmax): Softmax(dim=2)
+            (Sigmoid): Sigmoid()
+            (SE1): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE2): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE3): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+            (SE4): Conv2d(12, 12, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (norm5): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (norm6): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (5): SparseAttentionLayerBlock(
+          (norm3): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_attn): SparseAttention(
+            (qkv): Conv2d(48, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (qkv_dwconv): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (qkv_dwconv_pzh): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+            (pwconv): Conv2d(144, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (project_out): Conv2d(48, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (norm5): LayerNorm(
+              (body): WithBias_LayerNorm()
+            )
+            (act): ReLU()
+            (act_pzh): LeakyReLU(negative_slope=0.01)
+          )
+          (norm4): LayerNorm(
+            (body): WithBias_LayerNorm()
+          )
+          (restormer_ffn): FeedForward(
+            (project_in): Conv2d(48, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (dwconv): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (project_out): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          )
+        )
+        (6): Conv2d(48, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+    )
+    (4): Conv2d(48, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  )
+  (upsample): UpsampleOneStep(
+    (0): Conv2d(48, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (1): PixelShuffle(upscale_factor=2)
+  )
+)
+2024-08-26 14:57:53,810 INFO: Loading DLGSANet model from experiments/PSAFM_PSPA_16_LSR_x2/models/net_g_latest.pth, with param key: [params].
+2024-08-26 14:57:53,843 INFO: Model [SRModel] is created.
+2024-08-26 14:57:53,843 INFO: Testing Set5...
+2024-08-26 14:57:56,544 INFO: Validation Set5
+	 # psnr: 38.2023	Best: 38.2023 @ PSAFM_PSPA_16_LSR_x2 iter
+	 # ssim: 0.9612	Best: 0.9612 @ PSAFM_PSPA_16_LSR_x2 iter
+
+2024-08-26 14:57:56,544 INFO: Testing Set14...
+2024-08-26 14:58:01,336 INFO: Validation Set14
+	 # psnr: 34.0691	Best: 34.0691 @ PSAFM_PSPA_16_LSR_x2 iter
+	 # ssim: 0.9218	Best: 0.9218 @ PSAFM_PSPA_16_LSR_x2 iter
+
+2024-08-26 14:58:01,336 INFO: Testing BSD100...
+2024-08-26 14:58:16,687 INFO: Validation BSD100
+	 # psnr: 32.3302	Best: 32.3302 @ PSAFM_PSPA_16_LSR_x2 iter
+	 # ssim: 0.9017	Best: 0.9017 @ PSAFM_PSPA_16_LSR_x2 iter
+
+2024-08-26 14:58:16,687 INFO: Testing Urban100...
+2024-08-26 14:59:20,132 INFO: Validation Urban100
+	 # psnr: 33.0567	Best: 33.0567 @ PSAFM_PSPA_16_LSR_x2 iter
+	 # ssim: 0.9364	Best: 0.9364 @ PSAFM_PSPA_16_LSR_x2 iter
+
+2024-08-26 14:59:20,136 INFO: Testing Manga109...
+2024-08-26 15:00:37,315 INFO: Validation Manga109
+	 # psnr: 39.4629	Best: 39.4629 @ PSAFM_PSPA_16_LSR_x2 iter
+	 # ssim: 0.9788	Best: 0.9788 @ PSAFM_PSPA_16_LSR_x2 iter
+
